@@ -15,6 +15,74 @@ public class App {
     public String bestCharge(List<String> inputs) {
         //TODO: write code here
 
-        return null;
+        String msg = "============= Order details =============\n";
+        int subtotal = 0;
+        int total = 0;
+        int pro1_total = 0;
+        int pro1_save = 0;
+        int pro2_save = 0;
+        int pro2_total = 0;
+        int final_total = 0;
+        String pro_itemName = null;
+        List<String> PromotionItems = salesPromotionRepository.findAll().get(1).getRelatedItems();
+
+        for (String input : inputs) {
+            String[] item_split = input.split("\\s");
+            String itemName = null;
+            int itemPrice = 0;
+            String itemID = item_split[0];
+            int numOfItem = Integer.parseInt(item_split[2]);
+
+            //msg = msg + " " + itemID + " " + numOfItem;
+
+            for (Item list_items : itemRepository.findAll()) {
+                if (list_items.getId().equals(itemID)) {
+                    itemName = list_items.getName();
+                    itemPrice = (int) list_items.getPrice();
+                    subtotal = itemPrice * numOfItem;
+                    total = total + subtotal;
+                    break;
+                }
+            }
+            msg = msg + itemName + " x " + numOfItem + " = " + subtotal + " yuan\n";
+
+            if (PromotionItems.contains(itemID)) {
+                if (pro_itemName == null) {
+                    pro_itemName = itemName;
+                    //  break;
+                } else {
+                    pro_itemName = pro_itemName + "，" + itemName;
+                    System.out.println(pro_itemName);
+                }
+                pro1_save = pro1_save + itemPrice * numOfItem / 2;
+                pro1_total = total - pro1_save;
+            }
+
+            if (total >= 30) {
+                pro2_save = pro2_save + 6;
+                pro2_total = total - 6;
+            }
+
+        }
+
+        msg = msg + "-----------------------------------\n";
+        if (pro1_save == 0 && pro2_save == 0) {
+            final_total = total;
+            msg = msg + "Total：" + final_total + " yuan\n" +
+                    "===================================";
+        } else if (pro1_save > pro2_save) {
+            msg = msg + "Promotion used:\n" + "Half price for certain dishes (" + pro_itemName + ")，saving 13 yuan\n" +
+                    "-----------------------------------\n" +
+                    "Total：" + pro1_total + " yuan\n" +
+                    "===================================";
+
+        } else {
+            msg = msg + "Promotion used:\n" + "满30减6 yuan，saving 6 yuan\n" +
+                    "-----------------------------------\n" +
+                    "Total：" + pro2_total + " yuan\n" +
+                    "===================================";
+        }
+        
+        return msg;
     }
 }
