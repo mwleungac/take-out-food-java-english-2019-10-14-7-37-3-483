@@ -75,7 +75,6 @@ public class App {
                     "-----------------------------------\n" +
                     "Total：" + pro1_total + " yuan\n" +
                     "===================================";
-
         } else {
             msg = msg + "Promotion used:\n" + "满30减6 yuan，saving 6 yuan\n" +
                     "-----------------------------------\n" +
